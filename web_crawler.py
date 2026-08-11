@@ -39,30 +39,21 @@ def get_links(html):
         pass
 
 def crawl():
+    print("SCOPE -> ", scope_domain )
     while 1:
         if TO_CRAWL:
                     url_final = TO_CRAWL.pop()
-                    print("TO_CRAWL.POP", TO_CRAWL)
-                    print("URL TIRADA", url_final)
-                    print("CRAWLED TO_CRAWL.POP", CRAWLED)
-                    if url_final not in CRAWLED:
-                        html = request(url_final)
+                    CRAWLED.add(url_final)
+
+                    html = request(url_final)
 
                     links = get_links(html)
                     if html:
                             if links:
                                 for link in links:
-                                    print("to aqui")
                                     if link not in CRAWLED and link not in TO_CRAWL:
-                                        print("link add to crawl", link)
                                         TO_CRAWL.append(link)
-                                        print("to crawl atual", TO_CRAWL)
-
-                                print("BEFORE CRAWLED", CRAWLED)
-                                print("TO CRAWL", TO_CRAWL)
-                                CRAWLED.add(url_final)
-                                print("CRAWLED", CRAWLED)
-                                print("CRAWLING ATUAL {}".format(url_final))
+                                print("CRAWLING -> {}".format(url_final))
                     else:
                         CRAWLED.add(url_final)
                         print("caiu no else")
