@@ -7,10 +7,10 @@ from urllib.parse import urlparse
 TO_CRAWL = []
 CRAWLED = set()
 
-def request(domain):
+def request(url_final):
     header = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"}
     try:
-        response = requests.get(domain, headers=header)   
+        response = requests.get(url_final, headers=header)   
         return response.text
 
 
@@ -20,17 +20,17 @@ def request(domain):
         print(error)
         pass
 
-def get_links(html, domain):
+def get_links(html):
     links = []
     try:
         soup = BeautifulSoup(html, "html.parser")
         tags_a = soup.find_all("a", href=True)
         for tag in tags_a:
             link = tag["href"]
-            url = urljoin(domain, link) 
+            url = urljoin(scope_domain, link) 
             scope_domain_hostname = urlparse(scope_domain).hostname
             hostname = urlparse(url).hostname
-            if url.startswith("http") and scope_domain_hostname == hostname:
+            if url.startswith("http") and scope_domain_hostname  == hostname and url not in links:
                 links.append(url)
         return links
 
@@ -39,26 +39,36 @@ def get_links(html, domain):
         pass
 
 def crawl():
-    print(TO_CRAWL)
     while 1:
         if TO_CRAWL:
-            domain = TO_CRAWL.pop()
-            html = request(domain)
-            links = get_links(html, domain)
-            if domain:
-                if html:
-                    if links:
-                        for link in links:
-                            if link not in CRAWLED and link not in TO_CRAWL:
-                                TO_CRAWL.append(link)
+                    url_final = TO_CRAWL.pop()
+                    print("TO_CRAWL.POP", TO_CRAWL)
+                    print("URL TIRADA", url_final)
+                    print("CRAWLED TO_CRAWL.POP", CRAWLED)
+                    if url_final not in CRAWLED:
+                        html = request(url_final)
 
-                        CRAWLED.add(domain)
-                        print("CRAWLING {}".format(domain))
-                else:
-                    CRAWLED.add(domain)
+                    links = get_links(html)
+                    if html:
+                            if links:
+                                for link in links:
+                                    print("to aqui")
+                                    if link not in CRAWLED and link not in TO_CRAWL:
+                                        print("link add to crawl", link)
+                                        TO_CRAWL.append(link)
+                                        print("to crawl atual", TO_CRAWL)
+
+                                print("BEFORE CRAWLED", CRAWLED)
+                                print("TO CRAWL", TO_CRAWL)
+                                CRAWLED.add(url_final)
+                                print("CRAWLED", CRAWLED)
+                                print("CRAWLING ATUAL {}".format(url_final))
+                    else:
+                        CRAWLED.add(url_final)
+                        print("caiu no else")
         else:
-            print("don't have any more links to crawling")
-            break
+                print("don't have any more links to crawling")
+                break
 
 if __name__ == "__main__":
         scope_domain = sys.argv[1]
