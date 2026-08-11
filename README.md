@@ -232,6 +232,7 @@ Some limitations include:
 * No concurrent requests.
 * Only one static `User-Agent` is currently used.
 * No advanced URL normalization.
+* Scope definition, but not option to all scopes.
 
 These limitations provide opportunities for future improvements.
 
@@ -296,31 +297,6 @@ URL 1 → Request ──┐
 URL 2 → Request ──┼→ Concurrent Processing
 URL 3 → Request ──┘
 ```
-
----
-
-## Scope
-
-Implement a configurable crawling scope.
-
-The crawler should be able to restrict crawling to a specific domain or set of allowed domains.
-
-For example:
-
-```text
-Target:
-example.com
-
-Allowed:
-example.com
-www.example.com
-
-Ignored:
-external-site.com
-another-domain.com
-```
-
-This would prevent the crawler from unnecessarily following links to external websites.
 
 ---
 
